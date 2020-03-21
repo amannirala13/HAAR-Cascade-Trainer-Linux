@@ -48,17 +48,38 @@ def check_env():
         prepare_env(missing)
         
 def open_pos_dir_chooser():
-    a = tkinter.filedialog.askdirectory()
-    print(a)
-    positive_entry_variable.set(a)
+    location = tkinter.filedialog.askdirectory()
+    print("Positive Dir selected: ", location)
+    positive_entry_variable.set(location)
     
 def open_neg_dir_chooser():
-    a = tkinter.filedialog.askdirectory()
-    print(a)
-    negative_entry_variable.set(a)
+    location = tkinter.filedialog.askdirectory()
+    print("Negative Dir selected: ", location)
+    negative_entry_variable.set(location)
+    
+def open_out_dir_chooser():
+    location = tkinter.filedialog.askdirectory()
+    print("Output Dir selected: ", location)
+    output_entry_variable.set(location)
+    
+def generate_index():
+    try:
+        os.system("find "+positive_entry_variable.get()+" -name '*.png' -o -name '*.jpg' > "+positive_entry_variable.get()+"/index_p.txt")
+        print("Successfully generated positive images index")
+    except:
+        print("ERROR: Couldn't generate positive images index file")
         
+    try:
+        os.system("find "+negative_entry_variable.get()+" -name '*.png' -o -name '*.jpg' > "+negative_entry_variable.get()+"/index_p.txt")
+        print("Successfully generated negative images index")
+    except:
+        print("ERROR: Couldn't generate negative images index file")
+
 def start_training():
     print("training")
+    print("Positive image location: ",positive_entry_variable.get())
+    print("Negative image location: ",negative_entry_variable.get())
+    generate_index()
 
 #Starting the application and checking all required libraries
 missing=[]
@@ -85,7 +106,12 @@ negative_entry_variable = tk.StringVar()
 negative_entry = tk.Entry(main_window, textvariable=negative_entry_variable).grid(column=1, row=2)
 negative_entry_btn = tk.Button(text="...", height = 2, width=10, command = open_neg_dir_chooser).grid(column=2, row=2)
 
-start_btn = tk.Button(main_window,text="Start", fg = "#000000", bg = "#00FF55", height = 2, width = 20, command = start_training).grid(column=0,row=3)
+output_lable = tk.Label(main_window,text="Output location", pady=3).grid(column=0,row=3)
+output_entry_variable = tk.StringVar()
+output_entry = tk.Entry(main_window, textvariable=negative_entry_variable).grid(column=1, row=3)
+output_entry_btn = tk.Button(text="...", height = 2, width=10, command = open_neg_dir_chooser).grid(column=2, row=3)
+
+start_btn = tk.Button(main_window,text="Start", fg = "#000000", bg = "#00FF55", height = 2, width = 20, command = start_training).grid(column=0,row=4)
 
 
 
