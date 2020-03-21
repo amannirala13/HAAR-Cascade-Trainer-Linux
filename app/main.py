@@ -1,4 +1,3 @@
-missing=[]
 import os
 import sys
 import subprocess as sp
@@ -8,7 +7,10 @@ try:
 except:
     import Tkinter as tk
     import tkFileDialog as fileDialog
-    
+Image = None
+cv = None
+ 
+   
 def avail_network():
     available = True
     try:
@@ -16,6 +18,7 @@ def avail_network():
     except:
         available = False
     return available
+
 
 def prepare_env(missing):
     if avail_network() == False:
@@ -38,9 +41,12 @@ def prepare_env(missing):
                 os.system('sudo apt-get install -y python3-opencv')
             else:
                 os.system('sudo apt-get install -y python-opencv')
+        missing = []
         check_env()
 
+
 def check_env():
+    missing = []
     try:
         os.system("git --version")
     except:
@@ -52,12 +58,16 @@ def check_env():
         print("Create Samples missing")
         missing.append("libopencv")
     try:
-        from PIL import Image
+        global Image
+        from PIL import Image as img
+        Image=img
     except:
         print("PIL missing")
         missing.append("PIL")
     try:
-        import cv2 as cv
+        global cv
+        import cv2 as cv_local
+        cv = cv_local
     except:
         print("OpenCV missing")
         missing.append("opencv")
@@ -67,33 +77,47 @@ def check_env():
         prepare_env(missing)
     else:
         print("Environment ready!")
-        
+
+      
 def open_pos_dir_chooser():
     location = fileDialog.askdirectory()
     print("Positive Dir selected: ", location)
     positive_entry_variable.set(location)
-    
+
 def open_neg_dir_chooser():
     location = fileDialog.askdirectory()
     print("Negative Dir selected: ", location)
     negative_entry_variable.set(location)
-    
+
 def open_out_dir_chooser():
     location = fileDialog.askdirectory()
     print("Output Dir selected: ", location)
     output_entry_variable.set(location)
-    
+
+
 def generate_index():
     try:
         os.system("find "+negative_entry_variable.get()+" -name '*.png' -o -name '*.jpg' > "+negative_entry_variable.get()+"/index.txt")
         print("Successfully generated negative images index")
     except:
-        print("ERROR: Couldn't generate negative images index file")
+        print("ERROR: Couldn't generate negative images index file ||| STOP PROGRESS")
     try:
         os.system("find "+positive_entry_variable.get()+" -name '*.png' -o -name '*.jpg' > "+positive_entry_variable.get()+"/index.txt")
         print("Successfully generated positive images index")
     except:
-        print("ERROR: Couldn't generate positive images index file")
+        print("ERROR: Couldn't generate positive images index file ||| STOP PROGRESS")
+    generate_positive_list()
+
+        
+def generate_positive_list():
+    try:
+        index = open(positive_entry_variable.get()+"/index.txt")
+    except:
+        print("Unable to open positive images inex file ||| STOP PROGRESS")
+    images = index.readlines()
+    for i in range (0, len(images)):
+        width, height = Image.open(images[i].split('\n')[0]).size
+
         
 def start_training():
     print("training")
