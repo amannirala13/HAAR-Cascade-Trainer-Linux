@@ -1,8 +1,8 @@
 # Installing required packages! 
 # -----------------------------------------------------------------------------
 # Update the pakages in your environment
-sudo apt-get update
-sudo apt-get upgrade
+#  sudo apt-get update
+#  sudo apt-get upgrade
 
 # If they are missing, install them using the following commands
 #  sudo apt-get install python3
