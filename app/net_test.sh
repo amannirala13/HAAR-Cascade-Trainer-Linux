@@ -4,5 +4,4 @@ then
 else
     echo "Internet is not present"
     exit 1
-
 fi
