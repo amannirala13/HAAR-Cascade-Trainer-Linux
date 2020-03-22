@@ -1,3 +1,4 @@
 /home/aman/Desktop/HAAR-Cascade-Creator-OpenCV/test_samples/info/0001_0669_0363_0162_0162.jpg
 /home/aman/Desktop/HAAR-Cascade-Creator-OpenCV/test_samples/p/face.png
+/home/aman/Desktop/HAAR-Cascade-Creator-OpenCV/test_samples/p/back.jpg
 /home/aman/Desktop/HAAR-Cascade-Creator-OpenCV/test_samples/n/back.jpg

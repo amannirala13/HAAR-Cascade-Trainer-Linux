@@ -110,13 +110,22 @@ def generate_index():
 
         
 def generate_positive_list():
+    if os.path.exists(output_entry_variable.get()+"/positive.lst"):
+        os.remove(output_entry_variable.get()+"/positive.lst")
     try:
         index = open(positive_entry_variable.get()+"/index.txt")
     except:
-        print("Unable to open positive images inex file ||| STOP PROGRESS")
+        print("Unable to open positive images idnex file ||| STOP PROGRESS")
     images = index.readlines()
+    try:
+        pos_list = open(output_entry_variable.get()+"/positive.lst", 'a')
+    except:
+        print("Unable to generate positive.lst file ||| STOP PROGRESS")
     for i in range (0, len(images)):
         width, height = Image.open(images[i].split('\n')[0]).size
+        pos_list.write(images[i].split('\n')[0]+" 1 0 0 "+str(width)+" "+str(height)+"\n")
+    pos_list.close()
+    index.close()
 
         
 def start_training():
