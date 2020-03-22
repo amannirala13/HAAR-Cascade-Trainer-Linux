@@ -1,2 +1,1 @@
 /home/aman/Desktop/HAAR-Cascade-Creator-OpenCV/test_samples/p/face.png
-/home/aman/Desktop/HAAR-Cascade-Creator-OpenCV/test_samples/p/back.jpg
