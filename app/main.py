@@ -7,7 +7,6 @@ try:
 except:
     import Tkinter as tk
     import tkFileDialog as fileDialog
-Image = None
 cv = None
  
    
@@ -32,11 +31,6 @@ def prepare_env(missing):
             os.system('sudo apt-get install -y build-essential')
             os.system('sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev')
             os.system('sudo apt-get install -y libopencv-dev')
-        if 'PIL' in missing:
-            if python_version[0] =='3':
-                os.system('pip3 install Pillow')
-            else:
-                os.system('pip install Pillow')
         if 'opencv' in missing:
             if python_version[0] =='3':
                 os.system('sudo apt-get install -y python3-opencv')
@@ -58,13 +52,6 @@ def check_env():
     except:
         print("Create Samples missing")
         missing.append("libopencv")
-    try:
-        global Image
-        from PIL import Image as img
-        Image=img
-    except:
-        print("PIL missing")
-        missing.append("PIL")
     try:
         global cv
         import cv2 as cv_local
@@ -141,6 +128,7 @@ def generate_positive_vector():
         os.system("opencv_createsamples -info positive.lst -num "+usage_num+" -w "+image_width_variable.get()+" -h "+image_height_variable.get()+" -vec "+output_entry_variable.get()+"/positive.vec")
     except:
         print("Unable to create positive.vec file")
+    pos_list.close()
     os.remove('positive.lst')
     train_classifier()
     
@@ -157,12 +145,19 @@ def train_classifier():
     total_pos = str(len(pos_index.readlines()))
     total_neg = str(len(neg_index.readlines()))
     try:
-        print("LOG>>>>>","opencv_traincascade -data classifier -vec "+output_entry_variable.get()+"/positive.vec -bg "+negative_entry_variable.get()+"/index.txt -numPos "+total_pos+" -numNeg "+total_neg+" -numStages "+num_stage_variable.get()+" -w "+image_width_variable.get()+" -h "+image_height_variable.get())
+        os.system("./dir_gen.sh "+output_entry_variable.get())
+    except:
+        print("Couldn't maike classifier directory! ||| STOP")
+    try:
         os.system("opencv_traincascade -data "+output_entry_variable.get()+"/classifier -vec "+output_entry_variable.get()+"/positive.vec -bg "+negative_entry_variable.get()+"/index.txt -numPos "+total_pos+" -numNeg "+total_neg+" -numStages "+num_stage_variable.get()+" -w "+image_width_variable.get()+" -h "+image_height_variable.get())
     except:
         print("ERROR: Couldnt train network")
     pos_index.close()
     neg_index.close()
+    training_successful()
+    
+def training_successful():
+    print("Training Completed Successfully")
         
 def start_training():
     print("training")
@@ -181,9 +176,9 @@ check_env()
 
 #Creating UI
 main_window = tk.Tk()
-main_window.title("HAAR CASCADE CLASSIFIER")
+main_window.title("HAAR CASCADE CLASSIFIER TRAINER")
 
-head_status = tk.Label(main_window, text="Starting", bg="#33ff8a", pady=3).grid(column=0,row=0, columnspan=1)
+head_status = tk.Label(main_window, text="HAAR CASCADE CLASSIFIER GUI TRAINER", bg="#33ff8a", pady=3).grid(column=0,row=0, columnspan=1)
 
 positive_label = tk.Label(main_window,text="Positive image dataset location", pady=3).grid(column=0,row=1)
 positive_entry_variable = tk.StringVar()
