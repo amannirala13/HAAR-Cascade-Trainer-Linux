@@ -10,7 +10,6 @@ except:
     import tkFileDialog as fileDialog
     import tkMessageBox as message
 cv = None
- 
    
 def avail_network():
     available = True
@@ -210,23 +209,23 @@ output_entry_btn = tk.Button(text="...", height = 1, width=5, command = open_out
 
 image_width_label = tk.Label(main_window, text="Sample Image: WIDTH", pady=3).grid(column=0, row=4, sticky="ew")
 image_width_variable = tk.StringVar()
-image_width_entry = tk.Entry(main_window, textvariable=image_width_variable).grid(column=1, row=4, sticky="ew")
 image_width_variable.set('24')
+image_width_entry = tk.Spinbox(main_window, textvariable=image_width_variable).grid(column=1, row=4, sticky="ew")
 
 image_height_label = tk.Label(main_window, text="Sample Image: HEIGHT", pady=3).grid(column=0, row=5, sticky="ew")
 image_height_variable = tk.StringVar()
-image_height_entry = tk.Entry(main_window, textvariable=image_height_variable).grid(column=1, row=5, sticky="ew")
 image_height_variable.set('24')
+image_height_entry = tk.Spinbox(main_window, textvariable=image_height_variable).grid(column=1, row=5, sticky="ew")
 
 sample_usage_percent_label = tk.Label(main_window, text="Sample image usage percent(%)", pady=3).grid(column=0,row=6, sticky="ew")
 sample_usage_percent_variable = tk.StringVar()
-sample_usage_percent_entry = tk.Entry(main_window, textvariable=sample_usage_percent_variable).grid(column=1, row=6, sticky="ew")
 sample_usage_percent_variable.set('100')
+sample_usage_percent_entry = tk.Spinbox(main_window, from_=0, to=100, textvariable=sample_usage_percent_variable).grid(column=1, row=6, sticky="ew")
 
 num_satge_label = tk.Label(main_window, text="Number of training stages", pady=3).grid(column=0,row=7, sticky="ew")
 num_stage_variable = tk.StringVar()
-num_stage_enter = tk.Entry(main_window, textvariable=num_stage_variable).grid(column=1,row=7, sticky="ew")
 num_stage_variable.set('10')
+num_stage_enter = tk.Spinbox(main_window, textvariable=num_stage_variable).grid(column=1,row=7, sticky="ew")
 
 start_btn_text = tk.StringVar()
 start_btn_text.set("Start")
