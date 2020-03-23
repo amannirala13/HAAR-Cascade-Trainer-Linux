@@ -4,8 +4,7 @@ This is a HAAR Cascade Classifier training GUI application for Linux. This appli
 # Requirements:
 This script has some minimum system requirements to run. They are listed as follows:
 + **Linux based system/terminal**
-+ **Python 3.6.9 (tested)**
-   > ` sudo apt-get install python3 ` 
++ **Python 3.6.9 (tested)**<br> **` sudo apt-get install python3 `** 
 
 The script can run with these minimum requirements and can install other packages automatically. However, it is recommended that you install the following packages before running the application:
 <details>
@@ -13,12 +12,12 @@ The script can run with these minimum requirements and can install other package
 </summary>
 This library is present by default in python3. But if still missing you can install it by using the following command provided:
 
-> `sudo apt-get install python3-tk`
+<b> `sudo apt-get install python3-tk` </b>
 </details>
 <details>
 <summary><b>OpenCV</b>
 </summary>
 This library would not be install by default, you can install openCV with the following commad:
 
-> `sudo apt-get install python3-opencv`
+<b> `sudo apt-get install python3-opencv` </b>
 </details>
