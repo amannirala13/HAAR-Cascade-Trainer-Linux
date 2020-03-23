@@ -74,7 +74,7 @@ This application is super easy to use! Here are all the step from downloading th
 
 5. This will launch the application interface with which you can train your HAAR Cascade classifier with your dataset.
 
-Now, you have the application ready and running to train you classifier. The steps below tell you how you can train the classifier using actual dataset.
+> Now, you have the application ready and running to train you classifier. The steps below tell you how you can train the classifier using actual dataset.
 
 6. To train a HAAR Cascade Classifier you will have to create two directories with **positive** and **negative** images i.e. **images with the target object** and the **images without the target object** accordingly. Provide the location of the directories of the positive dataset and negative dataset as per asked in the application.
    
