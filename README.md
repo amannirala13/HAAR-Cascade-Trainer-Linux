@@ -61,8 +61,8 @@ This application is super easy to use! Here are all the step from downloading th
 
 ### [WATCH VIDEO!](https://www.amannirala.com)
 
-1. You need to first clone all the files from the github repository. Visit [the repositiry](https://github.com/amannirala13/HAAR-Cascade-Creator-OpenCV) and download it as a zip file or just **open the terminal** and type the following command:
-   #### `git clone https://github.com/amannirala13/HAAR-Cascade-Creator-OpenCV.git`
+1. You need to first clone all the files from the github repository. Visit [the repositiry](https://github.com/amannirala13/HAAR-Cascade-Trainer-Linux.git) and download it as a zip file or just **open the terminal** and type the following command:
+   #### `git clone https://github.com/amannirala13/HAAR-Cascade-Trainer-Linux.git`
 
 2. Once downloaded open the terminal in the downloaded directory to make it the present working directory.
 
