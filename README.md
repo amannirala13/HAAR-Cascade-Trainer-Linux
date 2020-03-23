@@ -3,7 +3,7 @@ This is a HAAR Cascade Classifier training GUI application for Linux. This appli
 
 <br>
 
-# Requirements
+# 🦺 Requirements
 This script has some minimum system requirements to run. They are listed as follows:
 <details>
 <summary><b>Linux based system/terminal</b></summary>
@@ -56,7 +56,7 @@ This library would not be install by default, you can install openCV with the fo
 
 <br>
 
-# How to use?
+# 💡 How to use?
 This application is super easy to use! Here are all the step from downloading the application till testing your classifier:
 
 ### [WATCH VIDEO!](https://www.amannirala.com)
