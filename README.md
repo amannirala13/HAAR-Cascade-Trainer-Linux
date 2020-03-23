@@ -69,7 +69,7 @@ This application is super easy to use! Here are all the step from downloading th
 3. Once changed the pwd, you need to make all the file in the **`./app`** directory **executable**, use the following command to change the permission of the files:
    #### `chmod -R a-x ./app`
 
-4. Change you pwd to the **app** and execute the **main.py** with python using the following command:
+4. Change you pwd to the **app** and execute the **`main.py`** with python using the following command:
    #### `python3 main.py`
 
 5. This will launch the application interface with which you can train your HAAR Cascade classifier with your dataset.
@@ -78,7 +78,7 @@ This application is super easy to use! Here are all the step from downloading th
 
 6. To train a HAAR Cascade Classifier you will have to create two directories with **positive** and **negative** images i.e. **images with the target object** and the **images without the target object** accordingly. Provide the location of the directories of the positive dataset and negative dataset as per asked in the application.
    
-7. Then you need to select an output directory to tell the application where to store the **classifier.xml** file. Its recommended although not necessage to keep both the directories in the same directory and use that directory as the output directory.
+7. Then you need to select an output directory to tell the application where to store the **`classifier.xml`** file. Its recommended although not necessage to keep both the directories in the same directory and use that directory as the output directory.
 
 8. Now provide the width and height of the traget object which is by default set to 24x24.
 
@@ -88,7 +88,7 @@ This application is super easy to use! Here are all the step from downloading th
 
 11. Press the start button to start training!
 
-12. When the training is done, you can file your **classifier.xml** file in the output directory as **./classifier/classifier.xml**
+12. When the training is done, you can file your **`classifier.xml`** file in the output directory as **`./classifier/classifier.xml`**
 
 <br>
 
