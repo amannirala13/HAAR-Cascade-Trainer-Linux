@@ -1,6 +1,8 @@
 # HAAR Cascade GUI Trainer 1.0 - Linux
 This is a HAAR Cascade Classifier training GUI application for Linux. This application make it really easy to train classifiers for object detection and tracking using opencv by providing a Graphical user interface to set parameters and perform necessary steps.
-<br><br>
+
+<br>
+
 # Requirements
 This script has some minimum system requirements to run. They are listed as follows:
 <details>
@@ -51,6 +53,7 @@ This library would not be install by default, you can install openCV with the fo
 #### `sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev`
 #### `sudo apt-get install -y libopencv-dev`
 </details>
+
 <br>
 
 # How to use?
@@ -86,3 +89,22 @@ Now, you have the application ready and running to train you classifier. The ste
 11. Press the start button to start training!
 
 12. When the training is done, you can file your **classifier.xml** file in the output directory as **./classifier/classifier.xml**
+
+<br>
+
+## Recommendation for Dataset creation:
+This application doesn't cleans the data and the vectors are generate automatically on the positive dataset so its highly recommended that your positive images are well cropped and only contain the target object. I will be adding a cropper, an image labeler, seperate vector file providing and positive dataset generation using single image features in the coming versions. Till then just manage with this small drawback. 
+
+<br>
+
+# **❤ Support**
+If you like my work, a bit of contribution would motivate me a lot for more open source contributions.
+
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/amannirala13)
+
+*Please support the work:*
+ - [Follow on **Github**](https://github.com/amannirala13)
+ - [Follow on **LinkedIn**](https://www.linkedin.com/in/amannirala13/)
+ - [Follow on **Twitter**](https://twitter.com/AmanNirala13)
+ - [Follow on **Instagram**](https://www.instagram.com/amannirala13/)
+ - [Follow on **Research Gate**](https://www.researchgate.net/profile/Aman_Nirala)
