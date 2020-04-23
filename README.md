@@ -67,7 +67,7 @@ This application is super easy to use! Here are all the step from downloading th
 2. Once downloaded open the terminal in the downloaded directory to make it the present working directory.
 
 3. Once changed the pwd, you need to make all the file in the **`./app`** directory **executable**, use the following command to change the permission of the files:
-   #### `chmod -R a-x ./app`
+   #### `chmod -R a+x ./app`
 
 4. Change you pwd to the **app** and execute the **`main.py`** with python using the following command:
    #### `python3 main.py`
