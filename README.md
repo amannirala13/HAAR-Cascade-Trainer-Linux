@@ -59,7 +59,7 @@ This library would not be install by default, you can install openCV with the fo
 # 💡 How to use?
 This application is super easy to use! Here are all the step from downloading the application till testing your classifier:
 
-### [WATCH VIDEO!](https://www.amannirala.com)
+<!-- ### [WATCH VIDEO!](https://www.amannirala.com) -->
 
 1. You need to first clone all the files from the github repository. Visit [the repositiry](https://github.com/amannirala13/HAAR-Cascade-Trainer-Linux.git) and download it as a zip file or just **open the terminal** and type the following command:
    #### `git clone https://github.com/amannirala13/HAAR-Cascade-Trainer-Linux.git`
