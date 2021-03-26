@@ -1,5 +1,5 @@
 # HAAR Cascade GUI Trainer 1.0 (Alpha) - Linux
-This is a HAAR Cascade Classifier training GUI application for Linux. This application make it really easy to train classifiers for object detection and tracking using opencv by providing a Graphical user interface to set parameters and perform necessary steps.
+This is a HAAR Cascade Classifier training GUI application for Linux. This application makes it really easy to train classifiers for object detection and tracking using opencv by providing a Graphical user interface to set parameters and perform necessary steps.
 
 <br>
 
