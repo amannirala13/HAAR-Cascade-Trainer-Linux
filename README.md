@@ -21,6 +21,12 @@ If for any reason python is missing or is of oler version, use the following com
 #### ` sudo apt-get install python3 `
 </details>
 
+<details>
+<summary><b>Anaconda</b></summary>
+
+The latest versions of OpenCV do not support cascade trainer. Thus, downloading older versions of `opencv` is necessary to use this program. To avoid conflicts between package versions, it is recommended to create a separate environment that contains `opencv3`. Using Anaconda for this purpose is recommended, and the steps for the same are described in the following section.
+</details>
+
 <br>
 
 The script can run with these minimum requirements and can install other packages automatically. However, it is recommended that you install the following packages before running the application:
@@ -39,10 +45,17 @@ This library is present by default in python3. But if still missing you can inst
 </details>
 
 <details>
-<summary><b>OpenCV 3.2.0 (tested)</b></summary>
+<summary><b>OpenCV</b></summary>
 
-This library would not be install by default, you can install openCV with the following command:
-#### `sudo apt-get install python3-opencv`
+Create a new conda environment with a desired name, such as `opencv_legacy` using the command:
+#### `conda create -n opencv_legacy`
+
+Install OpenCV 3 from Anaconda repository using the following command:
+#### `conda activate opencv_legacy`
+#### `conda install -c menpo opencv3`
+
+It is necessary to keep the environment activated when using this program so that python can detect the appropriate version of OpenCV. Once you are done using the program, you can deactivate this environment using the command:
+#### `conda deactivate`
 </details>
 
 <details>
