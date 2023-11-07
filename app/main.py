@@ -153,7 +153,12 @@ def train_classifier():
     except:
         sys.exit("ERROR: Couldn't maike classifier directory at "+output_entry_variable.get()+" | Possible error in execution on ./dir_gen.sh")
     try:
-        sp.call(("opencv_traincascade -data "+output_entry_variable.get()+"/classifier -vec "+output_entry_variable.get()+"/positive.vec -bg "+negative_entry_variable.get()+"/index.txt -numPos "+total_pos+" -numNeg "+total_neg+" -numStages "+num_stage_variable.get()+" -w "+image_width_variable.get()+" -h "+image_height_variable.get()).split(' '))
+        sp.call(("opencv_traincascade -data "+output_entry_variable.get()+"/classifier -vec "+output_entry_variable.get()+"/positive.vec -bg "+
+                 negative_entry_variable.get()+"/index.txt -numPos "+total_pos+" -numNeg "+total_neg+" -numStages "+num_stage_variable.get()+
+                 " -w "+image_width_variable.get()+" -h "+image_height_variable.get()+" -mode "+mode_variable.get()+" -numThreads "+num_threads_variable.get()+
+                 " -precalcValBufSize "+val_buf_size_variable.get()+" -precalcIdxBufSize "+index_buf_size_variable.get()+
+                 " -acceptanceRatioBreakValue "+acceptance_ratio_break_variable.get()+" -minHitRate "+min_hit_rate_variable.get()+
+                 " -maxFalseAlarmRate "+max_false_alarm_rate_variable.get()+" -bt "+boost_type_variable.get()+" -featureType "+feature_type_variable.get()).split(' '))
     except:
         sys.exit("ERROR: Couldnt train network for some unknown error!")
     pos_index.close()
@@ -210,27 +215,77 @@ output_entry_btn = tk.Button(text="...", height = 1, width=5, command = open_out
 image_width_label = tk.Label(main_window, text="Sample Image: WIDTH", pady=3).grid(column=0, row=4, sticky="ew")
 image_width_variable = tk.StringVar()
 image_width_variable.set('24')
-image_width_entry = tk.Spinbox(main_window, textvariable=image_width_variable).grid(column=1, row=4, sticky="ew")
+image_width_entry = tk.Spinbox(main_window, from_=5, to=50, textvariable=image_width_variable).grid(column=1, row=4, sticky="ew")
 
 image_height_label = tk.Label(main_window, text="Sample Image: HEIGHT", pady=3).grid(column=0, row=5, sticky="ew")
 image_height_variable = tk.StringVar()
 image_height_variable.set('24')
-image_height_entry = tk.Spinbox(main_window, textvariable=image_height_variable).grid(column=1, row=5, sticky="ew")
+image_height_entry = tk.Spinbox(main_window, from_=5, to=50, textvariable=image_height_variable).grid(column=1, row=5, sticky="ew")
 
 sample_usage_percent_label = tk.Label(main_window, text="Sample image usage percent(%)", pady=3).grid(column=0,row=6, sticky="ew")
 sample_usage_percent_variable = tk.StringVar()
 sample_usage_percent_variable.set('100')
 sample_usage_percent_entry = tk.Spinbox(main_window, from_=0, to=100, textvariable=sample_usage_percent_variable).grid(column=1, row=6, sticky="ew")
 
-num_satge_label = tk.Label(main_window, text="Number of training stages", pady=3).grid(column=0,row=7, sticky="ew")
+num_stage_label = tk.Label(main_window, text="Number of training stages", pady=3).grid(column=0,row=7, sticky="ew")
 num_stage_variable = tk.StringVar()
-num_stage_variable.set('10')
-num_stage_enter = tk.Spinbox(main_window, textvariable=num_stage_variable).grid(column=1,row=7, sticky="ew")
+num_stage_variable.set('20')
+num_stage_enter = tk.Spinbox(main_window, from_=1, to=30, textvariable=num_stage_variable).grid(column=1,row=7, sticky="ew")
+
+num_threads_label = tk.Label(main_window, text="Number of threads to use", pady=3).grid(column=0,row=8, sticky="ew")
+num_threads_variable = tk.StringVar()
+num_threads_variable.set('5')
+num_threads_enter = tk.Spinbox(main_window, from_=1, to=10, textvariable=num_threads_variable).grid(column=1,row=8, sticky="ew")
+
+val_buf_size_label = tk.Label(main_window, text="Precalculated feature value buffer size (MB)", pady=3).grid(column=0,row=9, sticky="ew")
+val_buf_size_variable = tk.StringVar()
+val_buf_size_variable.set('1024')
+val_buf_size_enter = tk.Spinbox(main_window, from_=1, to=100000, textvariable=val_buf_size_variable).grid(column=1,row=9, sticky="ew")
+
+index_buf_size_label = tk.Label(main_window, text="Precalculated feature index buffer size (MB)", pady=3).grid(column=0,row=10, sticky="ew")
+index_buf_size_variable = tk.StringVar()
+index_buf_size_variable.set('1024')
+index_buf_size_enter = tk.Spinbox(main_window, from_=1, to=100000, textvariable=index_buf_size_variable).grid(column=1,row=10, sticky="ew")
+
+acceptance_ratio_break_label = tk.Label(main_window, text="Acceptance ratio break value", pady=3).grid(column=0,row=11, sticky="ew")
+acceptance_ratio_break_variable = tk.StringVar()
+acceptance_ratio_break_variable.set('-1')
+acceptance_ratio_break_enter = tk.Entry(main_window, textvariable=acceptance_ratio_break_variable).grid(column=1,row=11, sticky="ew")
+
+min_hit_rate_label = tk.Label(main_window, text="Minimal hit rate", pady=3).grid(column=0,row=12, sticky="ew")
+min_hit_rate_variable = tk.StringVar()
+min_hit_rate_variable.set('0.9950')
+min_hit_rate_enter = tk.Spinbox(main_window, from_=0.5, to=1, increment=0.0001, textvariable=min_hit_rate_variable).grid(column=1,row=12, sticky="ew")
+
+max_false_alarm_rate_label = tk.Label(main_window, text="Maximal false alarm rate", pady=3).grid(column=0,row=13, sticky="ew")
+max_false_alarm_rate_variable = tk.StringVar()
+max_false_alarm_rate_variable.set('0.50')
+max_false_alarm_rate_enter = tk.Spinbox(main_window, from_=0, to=1, increment=0.01, textvariable=max_false_alarm_rate_variable).grid(column=1,row=13, sticky="ew")
+
+# More options here
+
+feature_type_label = tk.Label(main_window, text="Which boost classifier to use", pady=3).grid(column=0,row=17, sticky="ew")
+feature_type_options = ["HAAR", "LBP"]
+feature_type_variable = tk.StringVar()
+feature_type_variable.set(feature_type_options[0])
+feature_type_enter = tk.OptionMenu(main_window, feature_type_variable, *feature_type_options).grid(column=1,row=17, sticky="ew")
+
+boost_type_label = tk.Label(main_window, text="Which boost classifier to use", pady=3).grid(column=0,row=18, sticky="ew")
+boost_type_options = ["GAB", "RAB", "LB", "DAB"]
+boost_type_variable = tk.StringVar()
+boost_type_variable.set(boost_type_options[0])
+boost_type_enter = tk.OptionMenu(main_window, boost_type_variable, *boost_type_options).grid(column=1,row=18, sticky="ew")
+
+mode_label = tk.Label(main_window, text="Which mode to use", pady=3).grid(column=0,row=19, sticky="ew")
+mode_options = ["BASIC", "CORE", "ALL"]
+mode_variable = tk.StringVar()
+mode_variable.set(mode_options[2])
+mode_enter = tk.OptionMenu(main_window, mode_variable, *mode_options).grid(column=1,row=19, sticky="ew")
 
 start_btn_text = tk.StringVar()
 start_btn_text.set("Start")
-start_btn = tk.Button(main_window,textvariable=start_btn_text, fg = "#000000", bg = "#00FF55", height = 2, width = 20, command = start_training).grid(column=0,row=8,columnspan=3,sticky="ew")
+start_btn = tk.Button(main_window,textvariable=start_btn_text, fg = "#000000", bg = "#00FF55", height = 2, width = 20, command = start_training).grid(column=0,row=20,columnspan=3,sticky="ew")
 
-developer_label = tk.Label(main_window, bg="#000000", fg="#ffffff", text="Developed by github.com/amannirala13").grid(column = 0, row=9, columnspan = 3, sticky="ew")
+# developer_label = tk.Label(main_window, bg="#000000", fg="#ffffff", text="Developed by github.com/amannirala13").grid(column = 0, row=10, columnspan = 3, sticky="ew")
 
 main_window.mainloop()
