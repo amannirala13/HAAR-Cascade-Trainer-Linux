@@ -22,7 +22,7 @@ def detectAndDisplay(frame):
         '''
         datasec = data_cascade.detectMultiScale(billROI)
         -------------------------------------------------------
-        Working on this section yet, data collection is being done to make a classifier for differenct data sections in a receipt.
+        Working on this section yet, data collection is being done to make a classifier for different data sections in a receipt.
         This section is open for active contribution. Send your pull request with your data set included if you want to contribute
         to this section.
         -------------------------------------------------------

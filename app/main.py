@@ -10,7 +10,19 @@ except:
     import tkFileDialog as fileDialog
     import tkMessageBox as message
 cv = None
-   
+
+# The Haar Cascade Linux Tool Requirement:
+#
+# conda create -n haar_trainer_opencv
+# conda activate haar_trainer_opencv
+# conda install py-opencv=3.4.2 (minimum requirement)
+#
+# Usage: python3 main.py
+
+posSampleTempFile = "pos_sample_temp.lst"
+negSampleTempFile = "neg_sample_temp.lst"
+openCV_checkRev = "3.4.2"
+
 def avail_network():
     available = True
     try:
@@ -40,7 +52,6 @@ def prepare_env(missing):
         missing = []
         check_env()
 
-
 def check_env():
     missing = []
     try:
@@ -67,124 +78,184 @@ def check_env():
     else:
         print("Environment ready!")
 
-      
-def open_pos_dir_chooser():
+def open_input_dir_chooser():
     location = fileDialog.askdirectory()
-    print("Positive Dir selected: ", location)
-    positive_entry_variable.set(location)
+    print("Input dataset dir: ", location)
+    input_entry_variable.set(location)
 
-def open_neg_dir_chooser():
-    location = fileDialog.askdirectory()
-    print("Negative Dir selected: ", location)
-    negative_entry_variable.set(location)
+def generate_dataset_list():
+    purge_folder_files(input_entry_variable.get())    # remove all previous vector & pos/neg list files
 
-def open_out_dir_chooser():
-    location = fileDialog.askdirectory()
-    print("Output Dir selected: ", location)
-    output_entry_variable.set(location)
-
-
-def generate_index():
+    # build pos/neg image file lists for creating samples and training classifier
+    included_extensions = ['jpg','jpeg','png']
     try:
-        os.system("find "+negative_entry_variable.get()+" -name '*.png' -o -name '*.jpg' > "+negative_entry_variable.get()+"/index.txt")
-        print("Successfully generated negative images index")
+        filelist = [fn for fn in os.listdir(input_entry_variable.get()+"/n")
+                    if any(fn.lower().endswith(ext) for ext in included_extensions)]
+        with open(input_entry_variable.get()+"/neg.lst", 'w') as output:
+            for item in filelist:
+              output.write("n/" + item + "\n")
+        output.close()
+        print("Successfully generated: ", input_entry_variable.get()+"/neg.lst")
     except:
-        sys.exit("ERROR: Couldn't generate negative images index file.")
+        sys.exit("ERROR: Couldn't generate ", input_entry_variable.get()+"/neg.lst")
     try:
-        os.system("find "+positive_entry_variable.get()+" -name '*.png' -o -name '*.jpg' > "+positive_entry_variable.get()+"/index.txt")
-        print("Successfully generated positive images index")
+        filelist = [fn for fn in os.listdir(input_entry_variable.get()+"/p")
+                    if any(fn.lower().endswith(ext) for ext in included_extensions)]
+        with open(input_entry_variable.get()+"/pos.lst", 'w') as output:
+            for item in filelist:
+              output.write("p/" + item + "\n")
+        output.close()
+        print("Successfully generated: ", input_entry_variable.get()+"/pos.lst")
     except:
-        sys.exit("ERROR: Couldn't generate positive images index file.")
-    generate_positive_list()
+        sys.exit("ERROR: Couldn't generate ", input_entry_variable.get()+"/pos.lst")
+    generate_positive_sample_list()
 
         
-def generate_positive_list():
-    if os.path.exists(output_entry_variable.get()+"/positive.lst"):
-        os.remove(output_entry_variable.get()+"/positive.lst")
+def generate_positive_sample_list():
+    purge_folder_files(input_entry_variable.get()+"/classifier")    # remove all previous classifier param/stage contents
+
+    # open positive list file 
     try:
-        index = open(positive_entry_variable.get()+"/index.txt")
+        pos_list = open(input_entry_variable.get()+"/pos.lst")
     except:
-        sys.exit("ERROR: Unable to open positive images index file.")
-    images = index.readlines()
-    try:
-        pos_list = open("positive.lst", 'a')
+        sys.exit("ERROR: Unable to open ", input_entry_variable.get()+"/pos.lst")
+    posImgs = pos_list.readlines()
+
+    # create positive sample list w/ image params for opencv_createsamples
+    if os.path.isfile(posSampleTempFile):   
+        os.remove(posSampleTempFile) 
+    try: 
+        pos_sample_list = open(posSampleTempFile, 'a')
     except:
-        sys.exit("ERROR: Unable to open/create positive.lst file.")
-    for i in range (0, len(images)):
+        sys.exit("ERROR: Unable to open ", input_entry_variable.get()+"/"+posSampleTempFile)
+    for i in range (0, len(posImgs)):
+        posImgPath = input_entry_variable.get()+"/"+posImgs[i].split('\n')[0]
         try:
-            height = cv.imread(images[i].split('\n')[0]).shape[0]
-            width = cv.imread(images[i].split('\n')[0]).shape[1]
+            height = cv.imread(posImgPath).shape[0]
+            width = cv.imread(posImgPath).shape[1]
         except:
-            sys.exit("ERROR: Could not open image file: "+images[i].split('\n')[0])
-        pos_list.write(images[i].split('\n')[0]+" 1 0 0 "+str(width)+" "+str(height)+"\n")
+            sys.exit("ERROR: Could not open image file: "+posImgs[i].split('\n')[0])
+        pos_sample_list.write(posImgPath+" 1 0 0 "+str(width)+" "+str(height)+"\n")
+
+    # cleanup file i/o
+    pos_sample_list.close()
     pos_list.close()
-    index.close()
+
     generate_positive_vector()
 
 def generate_positive_vector():
     try:
-        pos_list = open("positive.lst")
+        pos_sample_list = open(posSampleTempFile)
     except:
-        sys.exit("ERROR: Unable to read the file at: ",output_entry_variable.get()+"/positive.lst")
-    file_len = len(pos_list.readlines())
-    usage_num = str(int((int(sample_usage_percent_variable.get())/100)*file_len))
+        sys.exit("ERROR: Unable to read file: ", posSampleTempFile)
+    pos_sample_num = len(pos_sample_list.readlines())
+    # create positive vector list file for cascade trainer
     try:
-        os.system("opencv_createsamples -info positive.lst -num "+usage_num+" -w "+image_width_variable.get()+" -h "+image_height_variable.get()+" -vec "+output_entry_variable.get()+"/positive.vec")
+        print("Creating samples vector file ", input_entry_variable.get()+"/pos_samples.vec")
+        os.system("opencv_createsamples " + "-info "+posSampleTempFile+" -num "+str(pos_sample_num)+" -w "+image_width_variable.get()+" -h "+image_height_variable.get()+" -vec "+input_entry_variable.get()+"/pos_samples.vec")
     except:
-        sys.exit("ERROR: Unable to create file "+output_entry_variable.get()+"/positive.vec")
-    pos_list.close()
-    os.remove('positive.lst')
-    train_classifier()
+        sys.exit("ERROR: Unable to create file: ", posSampleTempFile)
+
+    # cleanup file i/o
+    pos_sample_list.close()
+    os.remove(posSampleTempFile) 
+
+    train_classifier(pos_sample_num)
     
-    
-def train_classifier():
+def train_classifier(pos_sample_num):
+    retVal = 0
+
+    # reduce positive sample num usage % if required to help cascade training for weaker positive datasets
+    total_pos = str(int((int(sample_usage_percent_variable.get())/100)*pos_sample_num))
+
+    # get negative sample size to use for training classifier
     try:
-        pos_index=open(positive_entry_variable.get()+"/index.txt")
+        neg_list=open(input_entry_variable.get()+"/neg.lst")
     except:
-        sys.exit("ERROR: Unable to open positive index.txt files at "+positive_entry_variable.get()+"/index.txt")
-    try:
-        neg_index=open(negative_entry_variable.get()+"/index.txt")
+        sys.exit("ERROR: Unable to open neg.lst files at "+input_entry_variable.get()+"/neg.lst")
+    negImgs = neg_list.readlines()
+    total_neg = str(len(negImgs))
+
+    # create negative temp sample list w/ absolute paths for opencv_traincascade
+    if os.path.isfile(negSampleTempFile):   
+        os.remove(negSampleTempFile) 
+    try: 
+        neg_sample_list = open(negSampleTempFile, 'a')
     except:
-        sys.exit("ERROR: Unable to open negative index.txt files at "+negative_entry_variable.get()+"/index.txt")
-    total_pos = str(len(pos_index.readlines()))
-    total_neg = str(len(neg_index.readlines()))
+        sys.exit("ERROR: Unable to open ", input_entry_variable.get()+"/"+negSampleTempFile)
+    for i in range (0, len(negImgs)):
+        neg_sample_list.write(input_entry_variable.get()+"/"+negImgs[i].split('\n')[0]+"\n")
+
+    # make classifier folder if needed for training 
     try:
-        os.system("./dir_gen.sh "+output_entry_variable.get())
+        os.system("./dir_gen.sh "+input_entry_variable.get())
     except:
-        sys.exit("ERROR: Couldn't maike classifier directory at "+output_entry_variable.get()+" | Possible error in execution on ./dir_gen.sh")
+        sys.exit("ERROR: Couldn't make classifier directory at "+input_entry_variable.get()+" | Possible error in execution on ./dir_gen.sh")
+
+    # Train cascade using positive vector list created by createSamples
     try:
-        sp.call(("opencv_traincascade -data "+output_entry_variable.get()+"/classifier -vec "+output_entry_variable.get()+"/positive.vec -bg "+
-                 negative_entry_variable.get()+"/index.txt -numPos "+total_pos+" -numNeg "+total_neg+" -numStages "+num_stage_variable.get()+
+        retVal = sp.call(("opencv_traincascade -data "+input_entry_variable.get()+"/classifier -vec "+input_entry_variable.get()+"/pos_samples.vec -bg "+
+                 negSampleTempFile+" -numPos "+total_pos+" -numNeg "+total_neg+" -numStages "+num_stage_variable.get()+
                  " -w "+image_width_variable.get()+" -h "+image_height_variable.get()+" -mode "+mode_variable.get()+" -numThreads "+num_threads_variable.get()+
                  " -precalcValBufSize "+val_buf_size_variable.get()+" -precalcIdxBufSize "+index_buf_size_variable.get()+
                  " -acceptanceRatioBreakValue "+acceptance_ratio_break_variable.get()+" -minHitRate "+min_hit_rate_variable.get()+
                  " -maxFalseAlarmRate "+max_false_alarm_rate_variable.get()+" -bt "+boost_type_variable.get()+" -featureType "+feature_type_variable.get()).split(' '))
+
     except:
-        sys.exit("ERROR: Couldnt train network for some unknown error!")
-    pos_index.close()
-    neg_index.close()
-    training_successful()
-    
-def training_successful():
-    start_btn_text.set("Start")
-    print("Training Completed Successfully")
-    message.showinfo('Successful','Your HAAR Cascade has been successfully trained. The classifier is located at '+output_entry_variable.get()+"/cascade")
+        print("ERROR: couldn't train network for some unknown error!")
+        retVal = -99
+
+    # cleanup file i/o
+    neg_sample_list.close()
+    os.remove(negSampleTempFile) 
+    neg_list.close()
+
+    training_results(retVal)
+
+def training_results(errorVal):
+    update_start_btn("Start")
+    if errorVal != 0:
+        print("Training Unsuccessful")
+        message.showinfo('Training Unsuccessful','Unable to train HAAR Cascade, error: ' + str(errorVal))
+    else:
+        print("Training Completed Successfully")
+        message.showinfo('Successful','Your HAAR Cascade has been successfully trained. The classifier is located at '+input_entry_variable.get()+"/classifier")
         
 def start_training():
     if check_val():
-        start_btn_text.set("Training...")
-        generate_index()
-    else:
-        message.showerror("Value error", "You have entered unexpected values, please check again... ")
-        
-def check_val():  # ToDo >>> Need to work on this function to check values range!
+        update_start_btn("Training classifier...")
+        generate_dataset_list()
+
+def update_start_btn(text):
+    start_btn_text.set(text)
+    start_btn.update_idletasks()   # force update control
+
+def check_val(): 
+    if str(cv.__version__) != openCV_checkRev:
+        message.showinfo("Invalid openCV Version!","HAAR Cascade Trainer requires OpenCV v" + openCV_checkRev + ", 'install py-opencv=3.4.2`.")
+        return False
+    if input_entry_variable.get() == "":
+        message.showinfo("Invalid Classifier Samples Folder!","HAAR Cascade Trainer requires valid classifier samples folder containing path to p/n dataset folders.")
+        return False
     return True
 
-#Starting the application and checking all required libraries
+def purge_folder_files(directory_path):
+    if os.path.isdir(directory_path): 
+        try:
+            files = os.listdir(directory_path)
+            for file in files:
+                file_path = os.path.join(directory_path, file)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            print("All files deleted successfully from: ", directory_path)
+        except OSError:
+            print("Error occurred while deleting files from: ",directory_path )
+  
+# Starting the application and checking all required libraries
 try:
     os.system('sudo echo Starting...')
 except:
-    sys.exit('Are you drunk? Run it as a super user!')
+    sys.exit('Run as a super user!')
 python_version = sys.version
 check_env()
 
@@ -194,23 +265,13 @@ main_window.title("HAAR CASCADE CLASSIFIER TRAINER")
 main_window.resizable(0,0)
 
 task_status = tk.StringVar()
-task_status.set("HAAR Cascade Trainer v1.0 | Environment read!")
+task_status.set("HAAR Cascade Trainer v1.1 | OpenCV v" + str(cv.__version__) )
 head_status = tk.Label(main_window, textvariable=task_status, bg="#33ff8a", pady=3).grid(column=0,row=0, columnspan=3, sticky="ew")
 
-positive_label = tk.Label(main_window,text="Positive image dataset location", pady=3).grid(column=0,row=1, sticky="ew")
-positive_entry_variable = tk.StringVar()
-positive_entry = tk.Entry(main_window, textvariable=positive_entry_variable).grid(column=1, row=1, sticky="ew")
-positive_entry_btn = tk.Button(text="...", height = 1, width=5, command = open_pos_dir_chooser).grid(column=2, row=1, sticky="ew")
-
-negative_label = tk.Label(main_window,text="Negative image dataset location", pady=3).grid(column=0,row=2, sticky="ew")
-negative_entry_variable = tk.StringVar()
-negative_entry = tk.Entry(main_window, textvariable=negative_entry_variable).grid(column=1, row=2, sticky="ew")
-negative_entry_btn = tk.Button(text="...", height = 1, width=5, command = open_neg_dir_chooser).grid(column=2, row=2, sticky="ew")
-
-output_label = tk.Label(main_window,text="Output location", pady=3).grid(column=0,row=3, sticky="ew")
-output_entry_variable = tk.StringVar()
-output_entry = tk.Entry(main_window, textvariable=output_entry_variable).grid(column=1, row=3, sticky="ew")
-output_entry_btn = tk.Button(text="...", height = 1, width=5, command = open_out_dir_chooser).grid(column=2, row=3, sticky="ew")
+input_label = tk.Label(main_window,text="Classifier samples folder:", pady=3).grid(column=0,row=3, sticky="ew")
+input_entry_variable = tk.StringVar()
+input_entry = tk.Entry(main_window, textvariable=input_entry_variable).grid(column=1, row=3, sticky="ew")
+input_entry_btn = tk.Button(text="...", height = 1, width=5, command = open_input_dir_chooser).grid(column=2, row=3, sticky="ew")
 
 image_width_label = tk.Label(main_window, text="Sample Image: WIDTH", pady=3).grid(column=0, row=4, sticky="ew")
 image_width_variable = tk.StringVar()
@@ -264,19 +325,19 @@ max_false_alarm_rate_enter = tk.Spinbox(main_window, from_=0, to=1, increment=0.
 
 # More options here
 
-feature_type_label = tk.Label(main_window, text="Which boost classifier to use", pady=3).grid(column=0,row=17, sticky="ew")
+feature_type_label = tk.Label(main_window, text="Classifier feature type to use", pady=3).grid(column=0,row=17, sticky="ew")
 feature_type_options = ["HAAR", "LBP"]
 feature_type_variable = tk.StringVar()
 feature_type_variable.set(feature_type_options[0])
 feature_type_enter = tk.OptionMenu(main_window, feature_type_variable, *feature_type_options).grid(column=1,row=17, sticky="ew")
 
-boost_type_label = tk.Label(main_window, text="Which boost classifier to use", pady=3).grid(column=0,row=18, sticky="ew")
+boost_type_label = tk.Label(main_window, text="Boosted classifier type to use", pady=3).grid(column=0,row=18, sticky="ew")
 boost_type_options = ["GAB", "RAB", "LB", "DAB"]
 boost_type_variable = tk.StringVar()
 boost_type_variable.set(boost_type_options[0])
 boost_type_enter = tk.OptionMenu(main_window, boost_type_variable, *boost_type_options).grid(column=1,row=18, sticky="ew")
 
-mode_label = tk.Label(main_window, text="Which mode to use", pady=3).grid(column=0,row=19, sticky="ew")
+mode_label = tk.Label(main_window, text="HAAR feature set to use", pady=3).grid(column=0,row=19, sticky="ew")
 mode_options = ["BASIC", "CORE", "ALL"]
 mode_variable = tk.StringVar()
 mode_variable.set(mode_options[2])
@@ -284,7 +345,8 @@ mode_enter = tk.OptionMenu(main_window, mode_variable, *mode_options).grid(colum
 
 start_btn_text = tk.StringVar()
 start_btn_text.set("Start")
-start_btn = tk.Button(main_window,textvariable=start_btn_text, fg = "#000000", bg = "#00FF55", height = 2, width = 20, command = start_training).grid(column=0,row=20,columnspan=3,sticky="ew")
+start_btn = tk.Button(main_window,textvariable=start_btn_text, fg = "#000000", bg = "#00FF55", height = 2, width = 20, command = start_training)
+start_btn.grid(column=0,row=20,columnspan=3,sticky="ew")
 
 # developer_label = tk.Label(main_window, bg="#000000", fg="#ffffff", text="Developed by github.com/amannirala13").grid(column = 0, row=10, columnspan = 3, sticky="ew")
 
